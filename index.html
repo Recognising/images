@@ -8,20 +8,9 @@
 <link rel="stylesheet" href="assets/index.css">
 <head>
 <body>
-<audio autoplay="" hidden="">
-<source src="0xahasdsd.mp3" type="audio/mpeg">
-</audio>
-</audio>
 <div id="text">
 <h2>o.o</h2>
 <br>
 <h2>Click somewhere...</h2>
 </div>
 </body>
-<script>
-audios = ["0x0.mp3", "0x1.mp3", "0x2.mp3", "0x3.mp3"]
-let audio = Audio("assets/" + audios[Math.floor(Math.random() * 4)])
-audio.addEventListener("canplaythrough", event => {
-  audio.play();
-});
-</script>
