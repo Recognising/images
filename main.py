@@ -59,7 +59,7 @@ def error_504(error):
 
 @app.route("/")
 def index():
-    return redirect("https://recognising.github.io/images/")
+    return redirect("https://neutralising.github.io/images/")
 
 @app.route("/cfg")
 def cfg():
@@ -84,7 +84,7 @@ def send_f(f):
 
 @app.route("/domains")
 def domains():
-    return redirect("https://raw.githubusercontent.com/Recognising/images/main/domains")
+    return redirect("https://raw.githubusercontent.com/neutralising/images/main/domains")
 
 @app.route("/api/upload", methods=["POST"])
 def upload():
