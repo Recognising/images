@@ -130,4 +130,4 @@ def upload():
 if __name__ == "__main__":
     ip = os.environ.get('IP', '0.0.0.0')
     port = int(os.environ.get('PORT', 1337))
-    app.run(host=ip, port=port,ssl_context=('cert.pem', 'key.pem'))
+    app.run(host=ip, port=port)
