@@ -1,9 +1,6 @@
 from flask import Flask, request, jsonify, render_template, send_file, redirect
 import os, random, string, json, concurrent.futures, time
 po = concurrent.futures.ThreadPoolExecutor()
-def prit():
-    time.sleep(0.1)
-    os.system("clear")
 uploads = json.load(open("uploads.json", 'r'))
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "uploads"
