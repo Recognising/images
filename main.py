@@ -1,5 +1,9 @@
 from flask import Flask, request, jsonify, render_template, send_file, redirect
-import os, random, string, json
+import os, random, string, json, concurrent.futures, time
+po = concurrent.futures.ThreadPoolExecutor()
+def prit():
+    time.sleep(0.1)
+    os.system("clear")
 uploads = json.load(open("uploads.json", 'r'))
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "uploads"
@@ -59,7 +63,7 @@ def error_504(error):
 
 @app.route("/")
 def index():
-    return redirect("https://neutralising.github.io/images/")
+    return redirect("https://q3h.github.io/images/")
 
 @app.route("/cfg")
 def cfg():
@@ -84,7 +88,7 @@ def send_f(f):
 
 @app.route("/domains")
 def domains():
-    return redirect("https://raw.githubusercontent.com/neutralising/images/main/domains")
+    return redirect("https://raw.githubusercontent.com/q3h/images/main/domains")
 
 @app.route("/api/upload", methods=["POST"])
 def upload():
@@ -99,11 +103,11 @@ def upload():
     fileext = os.path.splitext(filename)[-1].lower()
     if fileext in exts:
         if request.headers.get("title") == None:
-            title = "astolfo is hot"
+            title = filename
         else:
             title = request.headers.get("title")
         if request.headers.get("description") == None:
-            description = "Anything > sxcu.net"
+            description = f"all > e-z.host"
         else:
             description = request.headers.get("description")
         if request.headers.get("urltype") == "invis":
@@ -118,7 +122,7 @@ def upload():
             url = "<" + request.headers.get("fakeurl") + ">" + "||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||" + "https://" + request.headers["host"] + "/" + imgpath
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], f"{ok}{fileext}"))
         html = open(f"templates/{ok}.html", "w")
-        html.write(f'<meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{ok}">\n' + f'<meta name="twitter:card" content="{dictlol.get(fileext)[3]}">\n' + f'<meta property="{dictlol.get(fileext)[0]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[1]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[2]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta name="theme-color" content="#{color}">\n' + f'<h1>bad at css</h1>\n<a href=https://{request.headers["host"]}/i/{ok}{fileext}>File here</a>')
+        html.write(f'<meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{ok}">\n' + f'<meta name="twitter:card" content="{dictlol.get(fileext)[3]}">\n' + f'<meta property="{dictlol.get(fileext)[0]}" content="http://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[1]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[2]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta name="theme-color" content="#{color}">\n' + f'<h1>bad at css</h1>\n<a href=//{request.headers["host"]}/i/{ok}{fileext}>File here</a>')
         uploads[imgpath] = ok
         f = open("uploads.json", 'w')
         f.write(json.dumps(uploads, indent=4))
@@ -130,4 +134,44 @@ def upload():
 if __name__ == "__main__":
     ip = os.environ.get('IP', '0.0.0.0')
     port = int(os.environ.get('PORT', 1337))
+    def prit():
+        time.sleep(0.15)
+        os.system("clear")
+        print(f"""                                                                                
+                                                               
+                     //////////////////////%%%%%%%%%%%%%%%%%%                   
+                ////////////////////////////////#%%%%%%%%%%%%%%%%%              
+            ////////////////////////////////////////%%%%%%%%%%%%%%%%&           
+          ////////////////////////////////////////////(%%%%%%%%%%%%%%%%         
+        /////////////////////////////////////////////////%%%%%%%%%%%%%%%&       
+      ////////////////////////////////////////////////////######%%%%%%%%%%      
+     ///////////////(((############%///////////////////////########%%%%%%%%     
+    ////////////(#######################%#//////////////////##########%%%%%%    
+    /////////(##############################%////////////////##########%%%%%%   
+   #//////(#######(((((((((((((#####%&         (/////////////###########%%%%%   
+   %////(####((((((((((((((((((#                 (///////////###########%%%%%   
+    ///###((((((((((((((((((#                      //////////############%%%%   
+    (/##(((((((((((((((((#                          (///////############%%%%%   
+     #(((((((((((((((((#//#                          //////############%%%%%%   
+    #((((((((((((((((((////                          %////#############%%%%%    
+    ((((((((((((((((#(//////                          (/#############%%%%%%(    
+   %(((((((((((((((((////////                         ############%%%%%%%%(/(   
+   %(((((((((((((((#//////////                      %########%%%%%%%%%%%%////   
+   %((((((((((((((((////////////                %%%%%%%%%%%%%%%%%%%%%%%#/////   
+    ((((((((((((((((//////////////        %%%%%%%%%%%%%%%%%%%%%%%%%%%#///////   
+    (((((((((((((((#//////////////*/%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//////////   
+     #((((((((((((((//////////////*****/&%%%%%%%%%%%%%%%%%%%%%%(////////////    
+      #(((((((((((((#//////////////*********//%%%%%%%%%%%(//**//////////////    
+       ##((((((((((((((/////////////*************************/////////////&     
+        %###(((((((((((#//////////////*********************//////////////       
+          ######(((((((((%///////////////***************///////////////         
+            &###############%//////////////////***//////////////////            
+                #################///////////////////////////////&               
+                    #################%/////////////////////                     
+
+                                Worst image host.
+                                {ip}:{port}
+                                https://github.com/q3h/images  
+""")
+    po.submit(prit)
     app.run(host=ip, port=port)
