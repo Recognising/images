@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify, render_template, send_file, redirect
 import os, random, string, json, concurrent.futures, time
 po = concurrent.futures.ThreadPoolExecutor()
+def prit():
+    time.sleep(0.1)
+    os.system("clear")
 uploads = json.load(open("uploads.json", 'r'))
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "uploads"
@@ -99,16 +102,22 @@ def upload():
     filename = filename.lower()
     fileext = os.path.splitext(filename)[-1].lower()
     if fileext in exts:
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], f"{ok}{fileext}"))
+        vars = {"{{filename}}": file.filename, "{{size}}": str(os.path.getsize(f"uploads/{ok}{fileext}")) + " Bytes", "{{fileext}}": fileext, "{{bobux}}": str(random.randint(1, 1000)) + " bobux"}
         if request.headers.get("title") == None:
-            title = filename
+            title = "host"
+        elif request.headers.get("title").lower() in vars:
+            title = vars.get(request.headers.get("title").lower())
         else:
             title = request.headers.get("title")
         if request.headers.get("description") == None:
             description = f"all > e-z.host"
+        elif request.headers.get("description").lower() in vars:
+            description = vars.get(request.headers.get("description").lower())
         else:
             description = request.headers.get("description")
         if request.headers.get("urltype") == "invis":
-            imgpath = "".join(random.choices(["​"], k=random.randint(8, 64)))
+            imgpath = "".join(random.choices(["​", " ", " ", " "], k=random.randint(8, 64)))
         elif request.headers.get("urltype") == "emoji":
             imgpath  = "".join(random.choices(emojis, k=random.randint(8, 32)))
         else:
@@ -117,7 +126,6 @@ def upload():
             url = "https://" + request.headers["host"] + "/" + imgpath
         else:
             url = "<" + request.headers.get("fakeurl") + ">" + "||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||" + "https://" + request.headers["host"] + "/" + imgpath
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], f"{ok}{fileext}"))
         html = open(f"templates/{ok}.html", "w")
         html.write(f'<meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{ok}">\n' + f'<meta name="twitter:card" content="{dictlol.get(fileext)[3]}">\n' + f'<meta property="{dictlol.get(fileext)[0]}" content="http://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[1]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[2]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta name="theme-color" content="#{color}">\n' + f'<h1>bad at css</h1>\n<a href=//{request.headers["host"]}/i/{ok}{fileext}>File here</a>')
         uploads[imgpath] = ok
