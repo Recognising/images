@@ -114,7 +114,7 @@ def upload():
         else:
             description = request.headers.get("description")
         if request.headers.get("urltype") == "invis":
-            imgpath = "".join(random.choices(["​", " ", " ", " "], k=random.randint(8, 64)))
+            imgpath = "".join(random.choices(["​"], k=random.randint(8, 64)))
         elif request.headers.get("urltype") == "emoji":
             imgpath  = "".join(random.choices(emojis, k=random.randint(8, 32)))
         else:
