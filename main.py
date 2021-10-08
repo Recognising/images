@@ -136,10 +136,7 @@ def upload():
 if __name__ == "__main__":
     ip = os.environ.get('IP', '0.0.0.0')
     port = int(os.environ.get('PORT', 1337))
-    def prit():
-        time.sleep(0.15)
-        os.system("clear")
-        print(f"""                                                                                
+    print(f"""                                                                                
                                                                
                      //////////////////////%%%%%%%%%%%%%%%%%%                   
                 ////////////////////////////////#%%%%%%%%%%%%%%%%%              
@@ -172,8 +169,6 @@ if __name__ == "__main__":
                     #################%/////////////////////                     
 
                                 Worst image host.
-                                {ip}:{port}
                                 https://github.com/q3h/images  
-""")
-    po.submit(prit)
+    """)
     app.run(host=ip, port=port)
