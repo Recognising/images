@@ -100,7 +100,7 @@ def upload():
     fileext = os.path.splitext(filename)[-1].lower()
     if fileext in exts:
         file.save(os.path.join(app.config["UPLOAD_FOLDER"], f"{ok}{fileext}"))
-        vars = {"%filename%": file.filename, "%size%": str(os.path.getsize(f"uploads/{ok}{fileext}")) + " Bytes", "%fileext%": fileext, "%bobux%": str(random.randint(1, 1000)) + " bobux"}
+        vars = {"{filename}": file.filename, "{size}": str(os.path.getsize(f"uploads/{ok}{fileext}")) + " Bytes", "{fileext}": fileext, "{bobux}": str(random.randint(1, 1000)) + " bobux"}
         if request.headers.get("title") == None:
             title = "host"
         elif request.headers.get("title").lower() in vars:
