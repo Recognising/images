@@ -3,6 +3,7 @@ body {
 }
 
 #text {
+    font-size: 12px;
     color: #fff;
     font-family: monospace;
     position:relative;
