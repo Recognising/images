@@ -66,11 +66,23 @@ def index():
 def cfg():
     return send_file("uploader.sxcu", as_attachment=True)
 
+@app.route("/yuh.css")
+def vcss():
+    return """
+    * {
+        display: block;
+        margin: auto;
+    }
+    body {
+        background-color: #0e0e0e
+    }
+    """
+
 @app.route("/<f>")
 def files(f):
     uplds = json.load(open("uploads.json", 'r'))
     if f == "favicon.ico":
-        return "Annoying asf"
+        return send_file("favicon.ico")
     elif f not in uplds:
         return '<style>body{background-color: rgb(30, 30, 30);}.text{text-align: center; font-family: monospace; position: relative; top: 15%; color: rgb(255, 255, 255); text-shadow: 0px 0px 4px #ffffff;}</style><div class="text"> <h1>>.&#60;</h1> <h3>404</h3></div>', 404
     else:
@@ -117,14 +129,29 @@ def upload():
             imgpath = "".join(random.choices(["​"], k=random.randint(8, 64)))
         elif request.headers.get("urltype") == "emoji":
             imgpath  = "".join(random.choices(emojis, k=random.randint(8, 32)))
-        else:
+        elif request.headers.get("urltype") == "noext":
             imgpath = ok
+        else:
+            imgpath = ok + fileext
         if request.headers.get("fakeurl") == None:
             url = "https://" + request.headers["host"] + "/" + imgpath
         else:
             url = "<" + request.headers.get("fakeurl") + ">" + "||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||" + "https://" + request.headers["host"] + "/" + imgpath
+        what = {
+            ".gif":  ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
+            ".png":  ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
+            ".jpeg": ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
+            ".jpg":  ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
+            ".webm": ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+            ".mkv":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+            ".avi":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+            ".wmv":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+            ".mov":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+            ".mp4":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"]
+        }
+        #f'<h1>bad at css</h1>\n<a href=//{request.headers["host"]}/i/{ok}{fileext}>File here</a>
         html = open(f"templates/{ok}.html", "w")
-        html.write(f'<meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{ok}">\n' + f'<meta name="twitter:card" content="{dictlol.get(fileext)[3]}">\n' + f'<meta property="{dictlol.get(fileext)[0]}" content="http://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[1]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[2]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta name="theme-color" content="#{color}">\n' + f'<h1>bad at css</h1>\n<a href=//{request.headers["host"]}/i/{ok}{fileext}>File here</a>')
+        html.write(f'{what.get(fileext)[0]}\n{what.get(fileext)[1]}\n<link rel="stylesheet" href="../yuh.css"><meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{ok}">\n' + f'<meta name="twitter:card" content="{dictlol.get(fileext)[3]}">\n' + f'<meta property="{dictlol.get(fileext)[0]}" content="http://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[1]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[2]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta name="theme-color" content="#{color}">\n' + "\n" + what.get(fileext)[2])
         uploads[imgpath] = ok
         f = open("uploads.json", 'w')
         f.write(json.dumps(uploads, indent=4))
