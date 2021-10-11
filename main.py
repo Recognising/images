@@ -120,7 +120,7 @@ def upload():
         else:
             title = request.headers.get("title")
         if request.headers.get("description") == None:
-            description = f"all > e-z.host"
+            description = f"all > sxcu.net"
         elif request.headers.get("description").lower() in vars:
             description = vars.get(request.headers.get("description").lower())
         else:
@@ -149,7 +149,6 @@ def upload():
             ".mov":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
             ".mp4":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"]
         }
-        #f'<h1>bad at css</h1>\n<a href=//{request.headers["host"]}/i/{ok}{fileext}>File here</a>
         html = open(f"templates/{ok}.html", "w")
         html.write(f'{what.get(fileext)[0]}\n{what.get(fileext)[1]}\n<link rel="stylesheet" href="../yuh.css"><meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{ok}">\n' + f'<meta name="twitter:card" content="{dictlol.get(fileext)[3]}">\n' + f'<meta property="{dictlol.get(fileext)[0]}" content="http://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[1]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[2]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta name="theme-color" content="#{color}">\n' + "\n" + what.get(fileext)[2])
         uploads[imgpath] = ok
