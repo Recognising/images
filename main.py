@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template, send_file, redirect
-import os, random, string, json, time
+import os, random, string, json, uuid
 uploads = json.load(open("uploads.json", 'r'))
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "uploads"
@@ -90,7 +90,7 @@ def files(f):
     elif f not in uplds:
         return '<style>body{background-color: rgb(30, 30, 30);}.text{text-align: center; font-family: monospace; position: relative; top: 15%; color: rgb(255, 255, 255); text-shadow: 0px 0px 4px #ffffff;}</style><div class="text"> <h1>>.&#60;</h1> <h3>404</h3></div>', 404
     else:
-        return render_template(uplds.get(f) + ".html")
+        return render_template(uplds.get(f)[0] + ".html")
 
 @app.route("/i/<f>")
 def send_f(f):
@@ -110,9 +110,8 @@ def upload():
         ok = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
     chars = "0123456789abcdef"
     color = ''.join(random.choices(chars, k=6))
-    if request.args.get("type") == None:
-        return jsonify({"error": "Choose something (?type=file or ?type=paste)"})
-    elif request.args.get("type") == "file":
+    if request.args.get("type") == "file" or request.args.get("type") == None:
+        uuidd = str(uuid.uuid4())
         file = request.files["file"]
         filename = file.filename
         filename = filename.lower()
@@ -133,9 +132,9 @@ def upload():
             else:
                 description = request.headers.get("description")
             if request.headers.get("urltype") == "invis":
-                imgpath = "".join(random.choices(["​"], k=random.randint(8, 64)))
+                imgpath = "".join(random.choices(["​"], k=random.randint(8, 360)))
             elif request.headers.get("urltype") == "emoji":
-                imgpath  = "".join(random.choices(emojis, k=random.randint(8, 32)))
+                imgpath  = "".join(random.choices(emojis, k=random.randint(8, 64)))
             elif request.headers.get("urltype") == "noext":
                 imgpath = ok
             else:
@@ -158,14 +157,15 @@ def upload():
             }
             html = open(f"templates/{ok}.html", "w")
             html.write(f'{what.get(fileext)[0]}\n{what.get(fileext)[1]}\n<link rel="stylesheet" href="../yuh.css"><meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{imgpath}">\n' + f'<meta name="twitter:card" content="{dictlol.get(fileext)[3]}">\n' + f'<meta property="{dictlol.get(fileext)[0]}" content="http://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[1]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[2]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta name="theme-color" content="#{color}">\n' + "\n" + what.get(fileext)[2])
-            uploads[imgpath] = ok
+            uploads[imgpath] = [ok, ok+fileext, uuidd]
             f = open("uploads.json", 'w')
             f.write(json.dumps(uploads, indent=4))
             f.close()
-            return jsonify({"url": url})
+            return jsonify({"url": url, "file": f"https://{request.headers['host']}/i/{ok}{fileext}", "delete": f"https://{request.headers['host']}/api/delete/{imgpath}?code={uuidd}"})
         else:
             return jsonify({"error": "Invaild file extenstion (Vaild ones: .gif, .png, .jpeg, .jpg, .webm, .mkv, .avi, .wmv, .mov, .mp4)"}), 400
     elif request.args.get("type") == "paste":
+        uuidd = str(uuid.uuid4())
         file = request.files["file"]
         filename = file.filename
         filename = filename.lower()
@@ -186,9 +186,9 @@ def upload():
             else:
                 description = request.headers.get("description")
             if request.headers.get("urltype") == "invis":
-                paste = "".join(random.choices(["​"], k=random.randint(8, 64)))
+                paste = "".join(random.choices(["​"], k=random.randint(8, 360)))
             elif request.headers.get("urltype") == "emoji":
-                paste  = "".join(random.choices(emojis, k=random.randint(8, 32)))
+                paste  = "".join(random.choices(emojis, k=random.randint(8, 64)))
             elif request.headers.get("urltype") == "noext":
                 paste = ok
             else:
@@ -200,15 +200,30 @@ def upload():
             textL = open(f"uploads/{ok}{fileext}", 'r');textLL = textL.read();textL.close()
             html = open(f"templates/{ok}.html", "w")
             html.write(f'<meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{paste}">\n' + f'<meta name="twitter:card" content="summary_large_image">\n' + f'<meta property="og:image" content="http://{request.headers["host"]}/gds.png">\n' + f'<meta name="theme-color" content="#{color}">\n' + f'<pre style="word-wrap: break-word; white-space: pre-wrap;">\n{textLL}\n</pre>')
-            uploads[paste] = ok
+            uploads[paste] = [ok, ok+fileext, uuidd]
             f = open("uploads.json", 'w')
             f.write(json.dumps(uploads, indent=4))
             f.close()
-            return jsonify({"url": url})
+            return jsonify({"url": url, "file": f"https://{request.headers['host']}/i/{ok}{fileext}", "delete": f"https://{request.headers['host']}/api/delete/{paste}?code={uuidd}"})
         else:
-            return jsonify({"error": "Invaild file extenstion (Vaild ones: .gif, .png, .jpeg, .jpg, .webm, .mkv, .avi, .wmv, .mov, .mp4)"}), 400
+            return jsonify({"error": "Not a txt file"}), 400
     else:
         return jsonify({"error": "Choose something (?type=file or ?type=paste)"}), 400
+
+@app.route("/api/delete/<f>", methods=["GET", "POST", "DELETE"])
+def rmupload(f):
+    uplds = json.load(open("uploads.json", 'r'))
+    if request.args.get("code") == None:
+        return jsonify({"error": "Enter a key ?code=KEY"}), 400
+    elif f not in uplds:
+        return jsonify({"error": "File not found"}), 404
+    else:
+        code = request.args.get("code")
+        listt = uplds.get(f)
+        if code == listt[2]:
+            os.remove(f"templates/{listt[0]}.html");os.remove(f"uploads/{listt[1]}");del uplds[f];j = open("uploads.json", 'w');j.write(json.dumps(uplds, indent=4));j.close();return jsonify({"msg": "File deleted!"})
+        else:
+            return jsonify({"msg": "Invalid key"}), 401
 if __name__ == "__main__":
     ip = os.environ.get('IP', '0.0.0.0')
     port = int(os.environ.get('PORT', 1337))
