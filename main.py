@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, render_template, send_file, redirect
-import os, random, string, json, concurrent.futures, time
-po = concurrent.futures.ThreadPoolExecutor()
+import os, random, string, json, time
 uploads = json.load(open("uploads.json", 'r'))
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "uploads"
@@ -18,6 +17,7 @@ dictlol = {
     ".mov":  ["og:video", "twitter:player", "twitter:player:stream", "player"],
     ".mp4":  ["og:video", "twitter:player", "twitter:player:stream", "player"]
 }
+
 @app.errorhandler(400)
 def error_400(error):
     return '<style>body{background-color: rgb(30, 30, 30);}.text{text-align: center; font-family: monospace; position: relative; top: 15%; color: rgb(255, 255, 255); text-shadow: 0px 0px 4px #ffffff;}</style><div class="text"> <h1>>.&#60;</h1> <h3>400</h3></div>', 400
@@ -58,6 +58,7 @@ def error_503(error):
 def error_504(error):
     return '<style>body{background-color: rgb(30, 30, 30);}.text{text-align: center; font-family: monospace; position: relative; top: 15%; color: rgb(255, 255, 255); text-shadow: 0px 0px 4px #ffffff;}</style><div class="text"> <h1>>.&#60;</h1> <h3>504</h3></div>', 504
 
+
 @app.route("/")
 def index():
     return redirect("https://q3h.github.io/images/")
@@ -78,6 +79,9 @@ def vcss():
     }
     """
 
+@app.route("/gds.png")
+def loll():
+    return send_file("gds.png")
 @app.route("/<f>")
 def files(f):
     uplds = json.load(open("uploads.json", 'r'))
@@ -106,59 +110,105 @@ def upload():
         ok = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
     chars = "0123456789abcdef"
     color = ''.join(random.choices(chars, k=6))
-    file = request.files["file"]
-    filename = file.filename
-    filename = filename.lower()
-    fileext = os.path.splitext(filename)[-1].lower()
-    if fileext in exts:
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], f"{ok}{fileext}"))
-        vars = {"{filename}": file.filename, "{size}": str(os.path.getsize(f"uploads/{ok}{fileext}")) + " Bytes", "{fileext}": fileext, "{bobux}": str(random.randint(1, 1000)) + " bobux"}
-        if request.headers.get("title") == None:
-            title = "host"
-        elif request.headers.get("title").lower() in vars:
-            title = vars.get(request.headers.get("title").lower())
+    if request.args.get("type") == None:
+        return jsonify({"error": "Choose something (?type=file or ?type=paste)"})
+    elif request.args.get("type") == "file":
+        file = request.files["file"]
+        filename = file.filename
+        filename = filename.lower()
+        fileext = os.path.splitext(filename)[-1].lower()
+        if fileext in exts:
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], f"{ok}{fileext}"))
+            vars = {"{filename}": file.filename, "{size}": str(os.path.getsize(f"uploads/{ok}{fileext}")) + " Bytes", "{fileext}": fileext, "{bobux}": str(random.randint(1, 1000)) + " bobux"}
+            if request.headers.get("title") == None:
+                title = "host"
+            elif request.headers.get("title").lower() in vars:
+                title = vars.get(request.headers.get("title").lower())
+            else:
+                title = request.headers.get("title")
+            if request.headers.get("description") == None:
+                description = f"all > sxcu.net"
+            elif request.headers.get("description").lower() in vars:
+                description = vars.get(request.headers.get("description").lower())
+            else:
+                description = request.headers.get("description")
+            if request.headers.get("urltype") == "invis":
+                imgpath = "".join(random.choices(["​"], k=random.randint(8, 64)))
+            elif request.headers.get("urltype") == "emoji":
+                imgpath  = "".join(random.choices(emojis, k=random.randint(8, 32)))
+            elif request.headers.get("urltype") == "noext":
+                imgpath = ok
+            else:
+                imgpath = ok + fileext
+            if request.headers.get("fakeurl") == None:
+                url = "https://" + request.headers["host"] + "/" + imgpath
+            else:
+                url = "<" + request.headers.get("fakeurl") + ">" + "||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||" + "https://" + request.headers["host"] + "/" + imgpath
+            what = {
+                ".gif":  ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
+                ".png":  ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
+                ".jpeg": ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
+                ".jpg":  ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
+                ".webm": ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+                ".mkv":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+                ".avi":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+                ".wmv":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+                ".mov":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
+                ".mp4":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"]
+            }
+            html = open(f"templates/{ok}.html", "w")
+            html.write(f'{what.get(fileext)[0]}\n{what.get(fileext)[1]}\n<link rel="stylesheet" href="../yuh.css"><meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{imgpath}">\n' + f'<meta name="twitter:card" content="{dictlol.get(fileext)[3]}">\n' + f'<meta property="{dictlol.get(fileext)[0]}" content="http://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[1]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[2]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta name="theme-color" content="#{color}">\n' + "\n" + what.get(fileext)[2])
+            uploads[imgpath] = ok
+            f = open("uploads.json", 'w')
+            f.write(json.dumps(uploads, indent=4))
+            f.close()
+            return jsonify({"url": url})
         else:
-            title = request.headers.get("title")
-        if request.headers.get("description") == None:
-            description = f"all > sxcu.net"
-        elif request.headers.get("description").lower() in vars:
-            description = vars.get(request.headers.get("description").lower())
+            return jsonify({"error": "Invaild file extenstion (Vaild ones: .gif, .png, .jpeg, .jpg, .webm, .mkv, .avi, .wmv, .mov, .mp4)"}), 400
+    elif request.args.get("type") == "paste":
+        file = request.files["file"]
+        filename = file.filename
+        filename = filename.lower()
+        fileext = os.path.splitext(filename)[-1].lower()
+        if fileext == ".txt":
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], f"{ok}{fileext}"))
+            vars = {"{filename}": file.filename, "{size}": str(os.path.getsize(f"uploads/{ok}{fileext}")) + " Bytes", "{fileext}": fileext, "{bobux}": str(random.randint(1, 1000)) + " bobux"}
+            if request.headers.get("title") == None:
+                title = "host"
+            elif request.headers.get("title").lower() in vars:
+                title = vars.get(request.headers.get("title").lower())
+            else:
+                title = request.headers.get("title")
+            if request.headers.get("description") == None:
+                description = f"all > sxcu.net"
+            elif request.headers.get("description").lower() in vars:
+                description = vars.get(request.headers.get("description").lower())
+            else:
+                description = request.headers.get("description")
+            if request.headers.get("urltype") == "invis":
+                paste = "".join(random.choices(["​"], k=random.randint(8, 64)))
+            elif request.headers.get("urltype") == "emoji":
+                paste  = "".join(random.choices(emojis, k=random.randint(8, 32)))
+            elif request.headers.get("urltype") == "noext":
+                paste = ok
+            else:
+                paste = ok + fileext
+            if request.headers.get("fakeurl") == None:
+                url = "https://" + request.headers["host"] + "/" + paste
+            else:
+                url = "<" + request.headers.get("fakeurl") + ">" + "||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||" + "https://" + request.headers["host"] + "/" + paste
+            textL = open(f"uploads/{ok}{fileext}", 'r');textLL = textL.read();textL.close()
+            html = open(f"templates/{ok}.html", "w")
+            html.write(f'<meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{paste}">\n' + f'<meta name="twitter:card" content="summary_large_image">\n' + f'<meta property="og:image" content="http://{request.headers["host"]}/gds.png">\n' + f'<meta name="theme-color" content="#{color}">\n' + f'<pre style="word-wrap: break-word; white-space: pre-wrap;">\n{textLL}\n</pre>')
+            uploads[paste] = ok
+            f = open("uploads.json", 'w')
+            f.write(json.dumps(uploads, indent=4))
+            f.close()
+            return jsonify({"url": url})
         else:
-            description = request.headers.get("description")
-        if request.headers.get("urltype") == "invis":
-            imgpath = "".join(random.choices(["​"], k=random.randint(8, 64)))
-        elif request.headers.get("urltype") == "emoji":
-            imgpath  = "".join(random.choices(emojis, k=random.randint(8, 32)))
-        elif request.headers.get("urltype") == "noext":
-            imgpath = ok
-        else:
-            imgpath = ok + fileext
-        if request.headers.get("fakeurl") == None:
-            url = "https://" + request.headers["host"] + "/" + imgpath
-        else:
-            url = "<" + request.headers.get("fakeurl") + ">" + "||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||" + "https://" + request.headers["host"] + "/" + imgpath
-        what = {
-            ".gif":  ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
-            ".png":  ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
-            ".jpeg": ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
-            ".jpg":  ['<html xmlns="http://www.w3.org/1999/xhtml" style="height: 100%;">', '<meta name="viewport" content="width=device-width, minimum-scale=0.1">', f'<body style="margin: 0px; background: #0e0e0e; height: 100%"><img style="-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 90%);transition: background-color 300ms;" src="http://{request.headers["host"]}/i/{ok}{fileext}" /></body></html>'],
-            ".webm": ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
-            ".mkv":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
-            ".avi":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
-            ".wmv":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
-            ".mov":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"],
-            ".mp4":  ['<html xmlns="http://www.w3.org/1999/xhtml">', '<meta name="viewport" content="width=device-width">', f'<video controls="" autoplay="" name="media"><source src="http://{request.headers["host"]}/i/{ok}{fileext}" type="video/{fileext.replace(".", "")}" /></video>', "player"]
-        }
-        html = open(f"templates/{ok}.html", "w")
-        html.write(f'{what.get(fileext)[0]}\n{what.get(fileext)[1]}\n<link rel="stylesheet" href="../yuh.css"><meta property="og:title" content="{title}">\n<meta property="twitter:title" content="{title}">\n<meta property="og:description" content="{description}">\n<meta property="twitter:description" content="{description}">' + f'<meta property="og:url" content="https://{request.headers["host"]}/{ok}">\n' + f'<meta name="twitter:card" content="{dictlol.get(fileext)[3]}">\n' + f'<meta property="{dictlol.get(fileext)[0]}" content="http://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[1]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta property="{dictlol.get(fileext)[2]}" content="https://{request.headers["host"]}/i/{ok}{fileext}">\n' + f'<meta name="theme-color" content="#{color}">\n' + "\n" + what.get(fileext)[2])
-        uploads[imgpath] = ok
-        f = open("uploads.json", 'w')
-        f.write(json.dumps(uploads, indent=4))
-        f.close()
-        return jsonify({"url": url})
+            return jsonify({"error": "Invaild file extenstion (Vaild ones: .gif, .png, .jpeg, .jpg, .webm, .mkv, .avi, .wmv, .mov, .mp4)"}), 400
     else:
-        return jsonify({"error": "Invaild file extenstion (Vaild ones: .gif, .png, .jpeg, .jpg, .webm, .mkv, .avi, .wmv, .mov, .mp4)"}), 400
-
+        return jsonify({"error": "Choose something (?type=file or ?type=paste)"}), 400
 if __name__ == "__main__":
     ip = os.environ.get('IP', '0.0.0.0')
     port = int(os.environ.get('PORT', 1337))
@@ -195,7 +245,6 @@ if __name__ == "__main__":
                     #################%/////////////////////                     
 
                                 Worst image host.
-                                {ip}:{port}
                                 https://github.com/q3h/images  
     """)
-    app.run(host=ip, port=port)
+    app.run(host=ip, port=port, threaded=True)
